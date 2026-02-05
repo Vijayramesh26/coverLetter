@@ -10,7 +10,7 @@
 
         <v-row>
           <v-col cols="12" md="5">
-            <v-card flat rounded="xl" class="pa-6 mb-4 shadow-sm border">
+            <v-card flat rounded="xl" class="pa-6 mb-2 shadow-sm border">
               <div class="d-flex align-center mb-6">
                 <v-icon color="primary" class="mr-3">mdi-file-edit-outline</v-icon>
                 <span class="text-h6 font-weight-bold">Configure</span>
@@ -27,8 +27,27 @@
                 class="mb-2"
               />
 
+              <p class="text-overline font-weight-bold mb-2 grey--text">Personal Details</p>
+              <v-text-field v-model="f.userName" label="Name" placeholder="Vijay Ramesh" dense outlined rounded />
+              <v-row dense>
+                <v-col cols="6">
+                  <v-text-field v-model="f.userEmail" label="Email" placeholder="example@company.com" dense outlined rounded />
+                </v-col>
+                <v-col cols="6">
+                  <v-text-field v-model="f.location" label="Location" dense outlined rounded />
+                </v-col>
+              </v-row>
+              <v-row dense>
+                <v-col cols="6">
+                  <v-text-field v-model="f.userPhoneNumber" label="Phone Number" dense outlined rounded />
+                </v-col>
+                <v-col cols="6">
+                  <v-text-field v-model="f.userLinkedinUrl" label="LinkedIn Profile" dense outlined rounded />
+                </v-col>
+              </v-row>
+
               <p class="text-overline font-weight-bold mb-2 grey--text">Recruiter Details</p>
-              <v-text-field v-model="f.recruiterName" label="Name" placeholder="Arun Kumar" dense outlined rounded />
+              <v-text-field v-model="f.recruiterName" label="Name" placeholder="Vikram" dense outlined rounded />
               <v-text-field v-model="f.recruiterEmail" label="Email" placeholder="example@company.com" dense outlined rounded />
               
               <v-row dense>
@@ -41,15 +60,14 @@
               </v-row>
 
               <p class="text-overline font-weight-bold mb-2 mt-4 grey--text">Job Context</p>
-              <v-text-field v-model="f.company" label="Company" placeholder="Comcast" dense outlined rounded />
-              <v-text-field v-model="f.role" label="Role" placeholder="Golang Developer" dense outlined rounded />
+              <v-text-field v-model="f.company" label="Company" placeholder="Comcast" dense outlined rounded /> 
               
               <v-row dense>
                 <v-col cols="6">
-                  <v-text-field v-model="f.experience" label="Exp (Years)" dense outlined rounded />
+                  <v-text-field v-model="f.role" label="Role" placeholder="Golang Developer" dense outlined rounded /> 
                 </v-col>
                 <v-col cols="6">
-                  <v-text-field v-model="f.location" label="Location" dense outlined rounded />
+                  <v-text-field v-model="f.experience" label="Exp (Years)" dense outlined rounded />
                 </v-col>
               </v-row>
             </v-card>
@@ -69,19 +87,12 @@
 
               <div class="grey lighten-4 pa-4 rounded-lg mb-4">
                 <div class="text-caption grey--text font-weight-bold mb-1">EMAIL SUBJECT</div>
-                <div class="text-body-2 font-weight-medium">{{ emailSubject }}</div>
+                <div class="text-body-1 font-weight-bold primary--text">{{ emailSubject }}</div>
               </div>
 
-              <v-textarea
-                v-model="message"
-                readonly
-                flat
-                solo
-                background-color="transparent"
-                auto-grow
-                rows="10"
-                class="message-preview-text"
-              />
+              <div class="preview-box pa-4 rounded-lg flex-grow-1 mb-4 overflow-y-auto border">
+                 <div class="message-display" v-html="formattedPreview"></div>
+              </div>
 
               <v-spacer></v-spacer>
 
@@ -124,16 +135,15 @@
 </template>
 
 <style scoped>
-.border {
-  border: 1px solid #e0e0e0 !important;
-}
-.shadow-sm {
-  box-shadow: 0 4px 20px rgba(0,0,0,0.03) !important;
-}
-.message-preview-text >>> textarea {
-  font-family: 'Inter', 'Roboto', sans-serif !important;
-  line-height: 1.6 !important;
-  color: #444 !important;
+.border { border: 1px solid #e0e0e0 !important; }
+.shadow-sm { box-shadow: 0 4px 20px rgba(0,0,0,0.03) !important; }
+.preview-box { background-color: #fafafa; min-height: 250px; }
+.message-display {
+  font-family: 'Inter', sans-serif;
+  line-height: 1.6;
+  color: #444;
+  white-space: pre-wrap;
+  word-break: break-word;
 }
 </style>
 
@@ -142,14 +152,18 @@ export default {
   data() {
     return {
       snackbar: false,
-      selectedTemplate: "Formal",
+      selectedTemplate: "Value-First",
       f: {
-        recruiterName: "VIJAY RAMESH",
+        userName: "VIJAY RAMESH",
+        userEmail: "",
+        userPhoneNumber: "",
+        userLinkedinUrl: "",
+        recruiterName: "Hiring Manager",
         recruiterEmail: "",
         recruiterWhatsapp: "",
         linkedinUrl: "",
-        company: "Comcast",
-        role: "Golang Developer",
+        company: "ABC Corp",
+        role: "Backend Developer",
         experience: "3",
         location: "Chennai"
       },
@@ -158,73 +172,108 @@ export default {
   },
 
   mounted() {
-    this.adminTemplates = JSON.parse(
-      localStorage.getItem("custom_templates") || "[]"
-    );
-
+    this.adminTemplates = JSON.parse(localStorage.getItem("custom_templates") || "[]");
     if (this.$vuetify.breakpoint.smAndDown) {
-      this.selectedTemplate = "Short";
+      this.selectedTemplate = "Short & Direct";
     }
   },
 
   computed: {
     templateList() {
-      return ["Formal", "Short", "Referral", ...this.adminTemplates.map(t => t.name)];
+      const defaults = ["Value-First", "Short & Direct", "Referral Request", "The Follow-up"];
+      const customs = this.adminTemplates.map(t => t.name);
+      return [...defaults, ...customs];
     },
 
     emailSubject() {
-      return `${this.f.role} Opportunity – ${this.f.company}`;
+      if (this.selectedTemplate === "The Follow-up") return `Checking in: ${this.f.role} application`;
+      return `Application for ${this.f.role} | ${this.f.userName} - ${this.f.experience} Yrs Exp`;
+    },
+
+    contactSignature() {
+      const { userName, userEmail, userPhoneNumber } = this.f;
+      return [userName, userEmail, userPhoneNumber]
+        .filter(val => val && val.trim() !== "") 
+        .join("\n");
     },
 
     message() {
-      const f = this.f;
+      const { f, contactSignature: sig } = this;
+      
+      // Check for Custom Admin Template
       const custom = this.adminTemplates.find(t => t.name === this.selectedTemplate);
-
       if (custom) {
         return custom.body
-          .replace(/{{recruiterName}}/g, f.recruiterName)
-          .replace(/{{company}}/g, f.company)
-          .replace(/{{role}}/g, f.role)
-          .replace(/{{experience}}/g, f.experience)
-          .replace(/{{location}}/g, f.location);
+          .replace(/{{recruiterName}}/g, f.recruiterName || "Hiring Manager")
+          .replace(/{{company}}/g, `*${f.company}*`)
+          .replace(/{{role}}/g, `*${f.role}*`)
+          .replace(/{{experience}}/g, `*${f.experience}*`)
+          .replace(/{{location}}/g, f.location)
+          .replace(/{{signature}}/g, sig) + (custom.body.includes('{{signature}}') ? '' : `\n\n${sig}`);
       }
 
-      if (this.selectedTemplate === "Short") {
-        return `Hi ${f.recruiterName}, I’m a ${f.role} with ${f.experience}+ years experience. Please let me know if there are openings at ${f.company}.`;
-      }
+      // Default Content Logic
+      const templates = {
+        "Value-First": `Hi ${f.recruiterName || "Hiring Manager"},
 
-      if (this.selectedTemplate === "Referral") {
-        return `Hi ${f.recruiterName}, I’d really appreciate a referral opportunity at ${f.company} for a ${f.role} position.`;
-      }
+I’ve been following *${f.company}’s* recent growth and was excited to see the *${f.role}* opening. With *${f.experience} years* of experience, I’ve built scalable solutions that align with your team's goals.
 
-      return `Hi ${f.recruiterName},
+I’d love to share how my background can add value. You can view my profile here: ${f.userLinkedinUrl}
 
-I’m Vijay R, a ${f.role} with ${f.experience} years of experience, based in ${f.location}.
-Please let me know if there are suitable openings at ${f.company}.`;
+Best regards,
+${sig}`,
+        
+        "Short & Direct": `Hi ${f.recruiterName || "Hiring Manager"},
+
+I'm reaching out regarding the *${f.role}* position at *${f.company}*. I have *${f.experience} years* of relevant experience and am very interested in the role.
+
+Are you the right person to speak with about this?
+
+Thanks,
+${sig}`,
+        
+        "Referral Request": `Hi ${f.recruiterName || "Hiring Manager"},
+
+I hope you're having a great week! I'm interested in applying for the *${f.role}* position at *${f.company}*. 
+
+Given your role there, I was wondering if you’d be open to providing a referral? 
+
+Best,
+${sig}`,
+        
+        "The Follow-up": `Hi ${f.recruiterName || "Hiring Manager"},
+
+I'm just checking in on my application for the *${f.role}* position at *${f.company}*. I'm still very interested and happy to provide any additional info.
+
+Looking forward to hearing from you!
+
+Best,
+${sig}`
+      };
+
+      return templates[this.selectedTemplate] || templates["Value-First"];
+    },
+
+    // UI-only: Renders the *bold* text in the preview window
+    formattedPreview() {
+      return this.message
+        .replace(/\*(.*?)\*/g, '<strong class="primary--text">$1</strong>')
+        .replace(/\n/g, '<br>');
     }
   },
 
   methods: {
     openGmail() {
-      window.open(
-        `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(this.f.recruiterEmail)}&su=${encodeURIComponent(this.emailSubject)}&body=${encodeURIComponent(this.message)}`,
-        "_blank"
-      );
+      window.open(`https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(this.f.recruiterEmail)}&su=${encodeURIComponent(this.emailSubject)}&body=${encodeURIComponent(this.message)}`, "_blank");
     },
-
     openWhatsApp() {
-      window.open(
-        `https://wa.me/${this.f.recruiterWhatsapp}?text=${encodeURIComponent(this.message)}`,
-        "_blank"
-      );
+      window.open(`https://wa.me/${this.f.recruiterWhatsapp}?text=${encodeURIComponent(this.message)}`, "_blank");
     },
-
     openLinkedIn() {
       navigator.clipboard.writeText(this.message);
       window.open(this.f.linkedinUrl || "https://www.linkedin.com/messaging/", "_blank");
       this.snackbar = true;
     },
-
     copyAll() {
       navigator.clipboard.writeText(`Subject: ${this.emailSubject}\n\n${this.message}`);
       this.snackbar = true;
