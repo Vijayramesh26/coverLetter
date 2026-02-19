@@ -12,6 +12,11 @@ const routes = [
     name: "Home",
     component: Home,
   },
+  {
+    path: "/resume",
+    name: "Resume",
+    component: () => import("@/views/ResumeBuilder.vue"),
+  },
   { path: "/", component: RecruiterGenerator },
   { path: "/admin/templates", component: TemplateAdmin },
   { path: '/recruiter', redirect: '/' }

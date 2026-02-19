@@ -1,0 +1,283 @@
+<template>
+  <v-container fluid class="grey lighten-5 fill-height align-start pa-0 pa-sm-4">
+    <v-row justify="center" no-gutters>
+      <v-col cols="12" lg="10" xl="8">
+        
+        <div class="px-4 py-6 text-center">
+          <h1 class="text-h4 font-weight-black primary--text mb-2">Connect+</h1>
+          <p class="text-subtitle-1 grey--text text--darken-1">Professional Recruiter Outreach, Simplified.</p>
+        </div>
+
+        <v-row>
+          <v-col cols="12" md="5">
+            <v-card flat rounded="xl" class="pa-6 mb-2 shadow-sm border">
+              <div class="d-flex align-center mb-6">
+                <v-icon color="primary" class="mr-3">mdi-file-edit-outline</v-icon>
+                <span class="text-h6 font-weight-bold">Configure</span>
+              </div>
+
+              <v-select
+                v-model="selectedTemplate"
+                :items="templateList"
+                label="Message Style"
+                prepend-inner-icon="mdi-format-list-bulleted"
+                outlined
+                rounded
+                color="primary"
+                class="mb-2"
+              />
+
+              <p class="text-overline font-weight-bold mb-2 grey--text">Personal Details</p>
+              <v-text-field v-model="f.userName" label="Name" placeholder="Vijay Ramesh" dense outlined rounded />
+              <v-row dense>
+                <v-col cols="6">
+                  <v-text-field v-model="f.userEmail" label="Email" placeholder="example@company.com" dense outlined rounded />
+                </v-col>
+                <v-col cols="6">
+                  <v-text-field v-model="f.location" label="Location" dense outlined rounded />
+                </v-col>
+              </v-row>
+              <v-row dense>
+                <v-col cols="6">
+                  <v-text-field v-model="f.userPhoneNumber" label="Phone Number" dense outlined rounded />
+                </v-col>
+                <v-col cols="6">
+                  <v-text-field v-model="f.userLinkedinUrl" label="LinkedIn Profile" dense outlined rounded />
+                </v-col>
+              </v-row>
+
+              <p class="text-overline font-weight-bold mb-2 grey--text">Recruiter Details</p>
+              <v-text-field v-model="f.recruiterName" label="Name" placeholder="Vikram" dense outlined rounded />
+              <v-text-field v-model="f.recruiterEmail" label="Email" placeholder="example@company.com" dense outlined rounded />
+              
+              <v-row dense>
+                <v-col cols="6">
+                  <v-text-field v-model="f.recruiterWhatsapp" label="WhatsApp" dense outlined rounded />
+                </v-col>
+                <v-col cols="6">
+                  <v-text-field v-model="f.linkedinUrl" label="LinkedIn Profile" dense outlined rounded />
+                </v-col>
+              </v-row>
+
+              <p class="text-overline font-weight-bold mb-2 mt-4 grey--text">Job Context</p>
+              <v-text-field v-model="f.company" label="Company" placeholder="Comcast" dense outlined rounded /> 
+              
+              <v-row dense>
+                <v-col cols="6">
+                  <v-text-field v-model="f.role" label="Role" placeholder="Golang Developer" dense outlined rounded /> 
+                </v-col>
+                <v-col cols="6">
+                  <v-text-field v-model="f.experience" label="Exp (Years)" dense outlined rounded />
+                </v-col>
+              </v-row>
+            </v-card>
+          </v-col>
+
+          <v-col cols="12" md="7">
+            <v-card flat rounded="xl" class="pa-6 border fill-height d-flex flex-column" color="white">
+              <div class="d-flex align-center justify-space-between mb-4">
+                <div class="d-flex align-center">
+                  <v-icon color="success" class="mr-3">mdi-eye-outline</v-icon>
+                  <span class="text-h6 font-weight-bold">Live Preview</span>
+                </div>
+                <v-chip small color="success lighten-5" text-color="success" class="font-weight-bold">
+                  {{ selectedTemplate }} Mode
+                </v-chip>
+              </div>
+
+              <div class="grey lighten-4 pa-4 rounded-lg mb-4">
+                <div class="text-caption grey--text font-weight-bold mb-1">EMAIL SUBJECT</div>
+                <div class="text-body-1 font-weight-bold primary--text">{{ emailSubject }}</div>
+              </div>
+
+              <div class="preview-box pa-4 rounded-lg flex-grow-1 mb-4 overflow-y-auto border">
+                 <div class="message-display" v-html="formattedPreview"></div>
+              </div>
+
+              <v-spacer></v-spacer>
+
+              <div class="mt-6">
+                <p class="text-caption grey--text text-center mb-4">SEND VIA</p>
+                <v-row dense>
+                  <v-col cols="6" sm="3">
+                    <v-btn block large rounded depressed color="red lighten-5" class="red--text text-none" @click="openGmail">
+                      <v-icon left>mdi-gmail</v-icon> Gmail
+                    </v-btn>
+                  </v-col>
+                  <v-col cols="6" sm="3">
+                    <v-btn block large rounded depressed color="green lighten-5" class="green--text text-none" @click="openWhatsApp">
+                      <v-icon left>mdi-whatsapp</v-icon> WhatsApp
+                    </v-btn>
+                  </v-col>
+                  <v-col cols="6" sm="3">
+                    <v-btn block large rounded depressed color="blue lighten-5" class="blue--text text-none" @click="openLinkedIn">
+                      <v-icon left>mdi-linkedin</v-icon> LinkedIn
+                    </v-btn>
+                  </v-col>
+                  <v-col cols="6" sm="3">
+                    <v-btn block large rounded depressed color="primary" class="text-none" @click="copyAll">
+                      <v-icon left>mdi-content-copy</v-icon> Copy
+                    </v-btn>
+                  </v-col>
+                </v-row>
+              </div>
+            </v-card>
+          </v-col>
+        </v-row>
+      </v-col>
+    </v-row>
+
+    <v-snackbar v-model="snackbar" rounded="pill" bottom center>
+      <v-icon left color="success">mdi-check-circle</v-icon>
+      Copied to clipboard
+    </v-snackbar>
+  </v-container>
+</template>
+
+<style scoped>
+.border { border: 1px solid #e0e0e0 !important; }
+.shadow-sm { box-shadow: 0 4px 20px rgba(0,0,0,0.03) !important; }
+.preview-box { background-color: #fafafa; min-height: 250px; }
+.message-display {
+  font-family: 'Inter', sans-serif;
+  line-height: 1.6;
+  color: #444;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+</style>
+
+<script>
+export default {
+  data() {
+    return {
+      snackbar: false,
+      selectedTemplate: "Value-First",
+      f: {
+        userName: "VIJAY RAMESH",
+        userEmail: "",
+        userPhoneNumber: "234234",
+        userLinkedinUrl: "",
+        recruiterName: "Hiring Manager",
+        recruiterEmail: "",
+        recruiterWhatsapp: "",
+        linkedinUrl: "",
+        company: "Comcast",
+        role: "Golang Developer",
+        experience: "3",
+        location: "Chennai"
+      },
+      adminTemplates: []
+    };
+  },
+
+  mounted() {
+    this.adminTemplates = JSON.parse(localStorage.getItem("custom_templates") || "[]");
+    if (this.$vuetify.breakpoint.smAndDown) {
+      this.selectedTemplate = "Short & Direct";
+    }
+  },
+
+  computed: {
+    templateList() {
+      const defaults = ["Value-First", "Short & Direct", "Referral Request", "The Follow-up"];
+      const customs = this.adminTemplates.map(t => t.name);
+      return [...defaults, ...customs];
+    },
+
+    emailSubject() {
+      if (this.selectedTemplate === "The Follow-up") return `Checking in: ${this.f.role} application`;
+      return `Application for ${this.f.role} | ${this.f.userName} - ${this.f.experience} Yrs Exp`;
+    },
+
+    contactSignature() {
+      const { userName, userEmail, userPhoneNumber } = this.f;
+      return [userName, userEmail, userPhoneNumber]
+        .filter(val => val && val.trim() !== "") 
+        .join("\n");
+    },
+
+    message() {
+      const { f, contactSignature: sig } = this;
+      
+      // Check for Custom Admin Template
+      const custom = this.adminTemplates.find(t => t.name === this.selectedTemplate);
+      if (custom) {
+        return custom.body
+          .replace(/{{recruiterName}}/g, f.recruiterName || "Hiring Manager")
+          .replace(/{{company}}/g, `*${f.company}*`)
+          .replace(/{{role}}/g, `*${f.role}*`)
+          .replace(/{{experience}}/g, `*${f.experience}*`)
+          .replace(/{{location}}/g, f.location)
+          .replace(/{{signature}}/g, sig) + (custom.body.includes('{{signature}}') ? '' : `\n\n${sig}`);
+      }
+
+      // Default Content Logic
+      const templates = {
+        "Value-First": `Hi ${f.recruiterName || "Hiring Manager"},
+
+I’ve been following *${f.company}’s* recent growth and was excited to see the *${f.role}* opening. With *${f.experience} years* of experience, I’ve built scalable solutions that align with your team's goals.
+
+I’d love to share how my background can add value. You can view my profile here: ${f.userLinkedinUrl}
+
+Best regards,
+${sig}`,
+        
+        "Short & Direct": `Hi ${f.recruiterName || "Hiring Manager"},
+
+I'm reaching out regarding the *${f.role}* position at *${f.company}*. I have *${f.experience} years* of relevant experience and am very interested in the role.
+
+Are you the right person to speak with about this?
+
+Thanks,
+${sig}`,
+        
+        "Referral Request": `Hi ${f.recruiterName || "Hiring Manager"},
+
+I hope you're having a great week! I'm interested in applying for the *${f.role}* position at *${f.company}*. 
+
+Given your role there, I was wondering if you’d be open to providing a referral? 
+
+Best,
+${sig}`,
+        
+        "The Follow-up": `Hi ${f.recruiterName || "Hiring Manager"},
+
+I'm just checking in on my application for the *${f.role}* position at *${f.company}*. I'm still very interested and happy to provide any additional info.
+
+Looking forward to hearing from you!
+
+Best,
+${sig}`
+      };
+
+      return templates[this.selectedTemplate] || templates["Value-First"];
+    },
+
+    // UI-only: Renders the *bold* text in the preview window
+    formattedPreview() {
+      return this.message
+        .replace(/\*(.*?)\*/g, '<strong class="primary--text">$1</strong>')
+        .replace(/\n/g, '<br>');
+    }
+  },
+
+  methods: {
+    openGmail() {
+      window.open(`https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(this.f.recruiterEmail)}&su=${encodeURIComponent(this.emailSubject)}&body=${encodeURIComponent(this.message)}`, "_blank");
+    },
+    openWhatsApp() {
+      window.open(`https://wa.me/${this.f.recruiterWhatsapp}?text=${encodeURIComponent(this.message)}`, "_blank");
+    },
+    openLinkedIn() {
+      navigator.clipboard.writeText(this.message);
+      window.open(this.f.linkedinUrl || "https://www.linkedin.com/messaging/", "_blank");
+      this.snackbar = true;
+    },
+    copyAll() {
+      navigator.clipboard.writeText(`Subject: ${this.emailSubject}\n\n${this.message}`);
+      this.snackbar = true;
+    }
+  }
+};
+</script>

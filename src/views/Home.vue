@@ -14,9 +14,9 @@
                 <v-icon color="primary">mdi-arrow-left</v-icon>
               </v-btn>
               <div>
-                <h1 class="text-h5 font-weight-black primary--text">Builder</h1>
+                <h1 class="text-h5 font-weight-black primary--text">Yezhu Builder</h1>
                 <p class="text-caption grey--text mb-0">
-                  Craft your professional narrative
+                  Celebrate The Rise of your career
                 </p>
               </div>
             </div>

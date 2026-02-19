@@ -3,21 +3,25 @@
     <v-app-bar app flat color="white" class="px-md-12 border-bottom">
       <div class="d-flex align-center">
         <v-avatar color="primary lighten-5" size="38" class="mr-3" to="/">
-          <v-icon color="primary" small >mdi-lightning-bolt</v-icon>
+          <ZhaLogo class="yezhu-logo primary--text" />
         </v-avatar>
-        <v-toolbar-title class="font-weight-black primary--text letter-spacing-tight">
-          HireStream
-        </v-toolbar-title>
+        <div class="d-flex flex-column justify-center ml-1" style="line-height: 1.1">
+          <div class="font-weight-black primary--text letter-spacing-tight text-h6">Yezhu</div>
+          <div class="text-caption grey--text font-weight-medium mt-n1 hidden-sm-and-down">The Rise</div>
+        </div>
       </div>
 
       <v-spacer />
-
-      <v-tabs color="primary" class="hidden-sm-and-down" optional hide-slider>
+ 
+      <v-tabs color="primary" class="hidden-sm-and-down ml-5" optional hide-slider>
         <v-tab to="/" class="text-none font-weight-bold px-6 mr-2 rounded-pill">
           <v-icon left small>mdi-message-text-outline</v-icon> Generator
         </v-tab>
         <v-tab to="/coverletter" class="text-none font-weight-bold px-6 mr-2 rounded-pill">
           <v-icon left small>mdi-file-document-outline</v-icon> Cover Letter
+        </v-tab>
+        <v-tab to="/resume" class="text-none font-weight-bold px-6 mr-2 rounded-pill">
+          <v-icon left small>mdi-account-details-outline</v-icon> Resume
         </v-tab>
         <v-tab to="/admin/templates" class="text-none font-weight-bold px-6 rounded-pill">
           <v-icon left small>mdi-cog-outline</v-icon> Admin
@@ -55,6 +59,9 @@
         <v-list-item to="/coverletter">
           <v-list-item-title>Cover Letter</v-list-item-title>
         </v-list-item>
+        <v-list-item to="/resume">
+          <v-list-item-title>Resume</v-list-item-title>
+        </v-list-item>
         <v-list-item to="/recruiter">
           <v-list-item-title>Generator</v-list-item-title>
         </v-list-item>
@@ -67,7 +74,12 @@
 </template>
 
 <script>
+import ZhaLogo from "@/components/ZhaLogo.vue";
+
 export default {
+  components: {
+    ZhaLogo
+  },
   data: () => ({
     mobileMenu: false
   })
@@ -77,6 +89,7 @@ export default {
 <style>
 /* Clean, Modern Typography */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
 
 .v-application {
   font-family: 'Inter', sans-serif !important;
@@ -90,12 +103,20 @@ export default {
   border-bottom: 1px solid #e5e7eb !important;
 }
 
+.yezhu-logo {
+  transition: transform 0.3s ease;
+}
+
+.v-avatar:hover .yezhu-logo {
+  transform: translateY(-2px) rotate(-5deg);
+}
+
 .letter-spacing-tight {
   letter-spacing: -0.5px;
 }
 
 /* Make Tabs look like pills instead of underlined text */
-.v-tab--active {
+.v-tab--active { 
   background-color: #eff6ff !important; /* Very light blue */
 }
 
