@@ -24,10 +24,10 @@
             <v-expansion-panels flat class="modern-panels">
               <v-expansion-panel class="mb-4 border rounded-xl">
                 <v-expansion-panel-header class="font-weight-bold py-4">
-                  <v-icon left color="primary"
-                    >mdi-account-circle-outline</v-icon
-                  >
-                  Personal Identity
+                  <div class="d-flex align-center">
+                    <v-icon left color="primary">mdi-account-circle-outline</v-icon>
+                    Personal Identity
+                  </div>
                 </v-expansion-panel-header>
                 <v-expansion-panel-content>
                   <v-row dense>
@@ -151,8 +151,10 @@
 
               <v-expansion-panel class="mb-4 border rounded-xl">
                 <v-expansion-panel-header class="font-weight-bold py-4">
-                  <v-icon left color="secondary">mdi-briefcase-outline</v-icon>
-                  Target Opportunity
+                  <div class="d-flex align-center">
+                    <v-icon left color="secondary">mdi-briefcase-outline</v-icon>
+                    Target Opportunity
+                  </div>
                 </v-expansion-panel-header>
                 <v-expansion-panel-content>
                   <v-text-field v-model="form.company.jobTitle" label="Job Title" outlined rounded dense color="secondary" />
@@ -166,8 +168,10 @@
 
               <v-expansion-panel class="mb-4 border rounded-xl">
                 <v-expansion-panel-header class="font-weight-bold py-4">
-                  <v-icon left color="blue-grey">mdi-card-account-details-outline</v-icon>
-                  Professional Context
+                  <div class="d-flex align-center">
+                    <v-icon left color="blue-grey">mdi-card-account-details-outline</v-icon>
+                    Professional Context
+                  </div>
                 </v-expansion-panel-header>
                 <v-expansion-panel-content>
                   <v-text-field v-model="form.professional.role" label="Current/Last Role" outlined rounded dense />
@@ -178,8 +182,10 @@
 
               <v-expansion-panel class="mb-4 border rounded-xl">
                 <v-expansion-panel-header class="font-weight-bold py-4">
-                  <v-icon left color="success">mdi-sparkles-outline</v-icon>
-                  Smart Add-ons
+                  <div class="d-flex align-center">
+                    <v-icon left color="success">mdi-sparkles-outline</v-icon>
+                    Smart Add-ons
+                  </div>
                 </v-expansion-panel-header>
                 <v-expansion-panel-content>
                   <div class="grey lighten-5 pa-4 rounded-lg">
@@ -224,8 +230,10 @@
 
               <v-expansion-panel class="mb-4 border rounded-xl">
                 <v-expansion-panel-header class="font-weight-bold py-4">
-                  <v-icon left color="amber darken-3">mdi-pen</v-icon>
-                  E-Signature
+                  <div class="d-flex align-center">
+                    <v-icon left color="amber darken-3">mdi-pen</v-icon>
+                    E-Signature
+                  </div>
                 </v-expansion-panel-header>
                 <v-expansion-panel-content>
                   <div class="signature-box border rounded-lg overflow-hidden">
@@ -638,7 +646,7 @@ export default {
 
       try {
         const canvas = await html2canvas(element, {
-          scale: 2, // Higher scale for better quality
+          scale: 4, // Increased scale for maximum clarity
           useCORS: true,
           logging: false,
           windowWidth: 794, // Lock the capture window width
@@ -651,14 +659,19 @@ export default {
           },
         });
 
-        const pdf = new jsPDF("p", "pt", "a4");
+        const pdf = new jsPDF({
+          orientation: "p",
+          unit: "pt",
+          format: "a4",
+          compress: true
+        });
         const imgData = canvas.toDataURL("image/png");
 
         // Calculate A4 dimensions in points
         const pageWidth = pdf.internal.pageSize.getWidth();
         const pageHeight = pdf.internal.pageSize.getHeight();
 
-        pdf.addImage(imgData, "PNG", 0, 0, pageWidth, pageHeight);
+        pdf.addImage(imgData, "PNG", 0, 0, pageWidth, pageHeight, undefined, 'FAST');
         pdf.save(
           `${this.form.personal.name.replace(/\s+/g, "_")}_Cover_Letter.pdf`
         );
@@ -984,6 +997,13 @@ export default {
 }
 .modern-panels .v-expansion-panel:before {
   display: none;
+}
+.modern-panels .v-expansion-panel-header {
+  justify-content: flex-start !important;
+  text-align: left !important;
+}
+.modern-panels .v-expansion-panel-header__content {
+  flex: 0 1 auto !important;
 }
 .border {
   border: 1px solid #e0e0e0 !important;
