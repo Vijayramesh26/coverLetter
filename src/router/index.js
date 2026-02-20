@@ -1,5 +1,6 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
+import Dashboard from "../views/Dashboard.vue";
 import Home from "../views/Home.vue";
 import RecruiterGenerator from "@/views/RecruiterGenerator.vue";
 import TemplateAdmin from "@/views/TemplateAdmin.vue";
@@ -7,6 +8,11 @@ import TemplateAdmin from "@/views/TemplateAdmin.vue";
 Vue.use(VueRouter);
 
 const routes = [
+  {
+    path: "/",
+    name: "Dashboard",
+    component: Dashboard,
+  },
   {
     path: "/coverletter",
     name: "Home",
@@ -17,9 +23,8 @@ const routes = [
     name: "Resume",
     component: () => import("@/views/ResumeBuilder.vue"),
   },
-  { path: "/", component: RecruiterGenerator },
   { path: "/admin/templates", component: TemplateAdmin },
-  { path: '/recruiter', redirect: '/' }
+  { path: "/recruiter", name: "Recruiter", component: RecruiterGenerator },
 ];
 
 const router = new VueRouter({

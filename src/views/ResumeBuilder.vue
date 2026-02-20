@@ -15,7 +15,7 @@
               </div>
             </div>
 
-            <div class="mb-6">
+            <div class="mb-6 tour-resume-step-2">
               <div class="text-caption grey--text mb-2 px-1">Choose Template Style</div>
               <v-btn-toggle v-model="selectedTemplate" mandatory borderless dense background-color="grey lighten-4" color="primary" class="rounded-pill overflow-hidden w-full">
                 <v-btn value="professional" small rounded text class="text-none flex-grow-1">Professional</v-btn>
@@ -26,7 +26,7 @@
 
             <v-expansion-panels flat class="modern-panels">
               <!-- Personal Information -->
-              <v-expansion-panel class="mb-4 border rounded-xl">
+              <v-expansion-panel class="mb-4 border rounded-xl tour-resume-step-1">
                 <v-expansion-panel-header class="font-weight-bold py-4">
                   <div class="d-flex align-center">
                     <v-icon left color="primary">mdi-account-outline</v-icon>
@@ -228,7 +228,10 @@
             </v-expansion-panels>
 
             <div class="mt-10 d-flex flex-column" style="gap: 12px">
-              <v-btn block x-large rounded depressed color="black" dark @click="downloadPDF">
+              <v-btn block x-large rounded depressed color="primary" @click="generatePDF('preview')" class="tour-resume-step-3">
+                <v-icon left>mdi-eye</v-icon> Preview PDF
+              </v-btn>
+              <v-btn block x-large rounded depressed color="black" dark @click="generatePDF('download')" class="tour-resume-step-4">
                 <v-icon left>mdi-file-pdf-box</v-icon> Download PDF
               </v-btn>
               <v-btn block large rounded outlined color="error" @click="resetForm">
@@ -370,6 +373,31 @@
         </v-col>
       </v-row>
     </v-container>
+
+    <!-- PDF Preview Dialog -->
+    <v-dialog v-model="showPreview" fullscreen hide-overlay transition="dialog-bottom-transition">
+      <v-card class="grey lighten-4">
+        <v-toolbar dark color="primary">
+          <v-btn icon dark @click="showPreview = false">
+            <v-icon>mdi-close</v-icon>
+          </v-btn>
+          <v-toolbar-title>PDF Preview</v-toolbar-title>
+          <v-spacer></v-spacer>
+          <v-toolbar-items>
+            <v-btn dark text @click="generatePDF('download')">
+              Download
+              <v-icon right>mdi-download</v-icon>
+            </v-btn>
+          </v-toolbar-items>
+        </v-toolbar>
+        <v-container fluid class="pa-0 fill-height justify-center">
+          <iframe v-if="previewUrl" :src="previewUrl" style="width: 100%; height: calc(100vh - 64px); border: none;"></iframe>
+          <v-progress-circular v-else indeterminate color="primary"></v-progress-circular>
+        </v-container>
+      </v-card>
+    </v-dialog>
+
+    <v-tour name="resumeTour" :steps="tourSteps"></v-tour>
   </v-app>
 </template>
 
@@ -382,11 +410,13 @@ export default {
   data() {
     return {
       selectedTemplate: "professional",
+      showPreview: false,
+      previewUrl: null,
       form: {
         personal: {
-          name: "Alex Webb",
+          name: "VIJAY RAMESH",
           phone: "555-123-4567",
-          email: "alex@email.com",
+          email: "[EMAIL_ADDRESS]",
           linkedin: "https://linkedin.com/in/alexwebbx",
           github: "https://github.com/alexwebbx"
         },
@@ -448,7 +478,34 @@ export default {
           education: true
         },
         customSections: []
-      }
+      },
+
+      tourSteps: [
+        {
+          target: '.tour-resume-step-1',
+          header: { title: 'Personal Info' },
+          content: 'Fill in your name, contact details, and social profiles here.',
+          params: { placement: 'bottom' }
+        },
+        {
+          target: '.tour-resume-step-2',
+          header: { title: 'Template Style' },
+          content: 'Switch between Professional, Modern, and Classic templates to see which fits your style.',
+          params: { placement: 'bottom' }
+        },
+        {
+          target: '.tour-resume-step-3',
+          header: { title: 'Preview' },
+          content: 'Preview exactly how your resume will look in A4 format before downloading.',
+          params: { placement: 'top' }
+        },
+        {
+          target: '.tour-resume-step-4',
+          header: { title: 'Download' },
+          content: 'Once ready, download your high-quality PDF resume.',
+          params: { placement: 'top' }
+        }
+      ]
     };
   },
   watch: {
@@ -464,6 +521,20 @@ export default {
   },
   created() {
     this.loadFromLocalStorage();
+
+    // Start tour on first visit
+    if (!localStorage.getItem('tour_completed_resume')) {
+      setTimeout(() => {
+        this.$tours['resumeTour'].start();
+        localStorage.setItem('tour_completed_resume', 'true');
+      }, 1000);
+    }
+
+    this.$root.$on('start-tour', () => {
+      if (this.$route.path === '/resume') {
+        this.$tours['resumeTour'].start();
+      }
+    });
   },
   methods: {
     saveToLocalStorage() {
@@ -522,15 +593,14 @@ export default {
         location.reload();
       }
     },
-    async downloadPDF() {
-      console.log("Starting Faithful Multi-Page PDF Download (v4)...");
+    async generatePDF(action = 'download') {
+      console.log(`Starting PDF generation for: ${action}`);
       const element = this.$refs.pdfContent;
       if (!element) return;
 
-      // 1. Prepare element for capture (Off-screen but original styles)
+      // 1. Prepare element for capture
       const originalStyle = element.style.cssText;
       
-      // Force A4 width and HIDDEN overflow to prevent scrollbars in capture
       element.style.width = "794px";
       element.style.height = "auto";
       element.style.position = "fixed";
@@ -539,15 +609,18 @@ export default {
       element.style.transform = "none";
       element.style.boxShadow = "none";
       element.style.margin = "0";
-      element.style.overflow = "hidden"; // v4.1 fix
+      element.style.overflow = "hidden";
 
       try {
-        // Wait for potential layout shifts or image loads
+        if (action === 'preview') {
+          this.showPreview = true;
+          this.previewUrl = null;
+        }
+
         await new Promise(r => setTimeout(r, 200));
 
-        // 2. Capture the REAL element
         const canvas = await html2canvas(element, {
-          scale: 3, // High quality
+          scale: 3,
           useCORS: true,
           logging: false,
           width: 794,
@@ -557,7 +630,6 @@ export default {
           backgroundColor: '#ffffff'
         });
 
-        // 3. Restore original styles immediately
         element.style.cssText = originalStyle;
 
         const imgData = canvas.toDataURL("image/png");
@@ -570,34 +642,36 @@ export default {
 
         const pageWidth = pdf.internal.pageSize.getWidth();
         const pageHeight = pdf.internal.pageSize.getHeight();
-        
-        // Standard A4 margin = 40pt
         const margin = 40;
         const targetWidth = pageWidth - (margin * 2);
         const imgHeightInPdfUnits = (canvas.height * targetWidth) / canvas.width;
         const availableHeightPerPage = pageHeight - (margin * 2);
         
-        // v4.1 Final Slicing: Use a larger 15pt buffer to ignore trailing whitespace
         const totalPages = Math.ceil((imgHeightInPdfUnits - 15) / availableHeightPerPage) || 1;
         
-        // 4. Multi-page slicing (for-loop approach)
         for (let i = 0; i < totalPages; i++) {
           const position = -(i * availableHeightPerPage);
           pdf.addImage(imgData, "PNG", margin, position, targetWidth, imgHeightInPdfUnits, undefined, 'FAST');
           
-          // Apply Header & Footer Masks (prevent content in these areas)
           pdf.setFillColor(255, 255, 255);
-          pdf.rect(0, 0, pageWidth, margin, 'F'); // Top margin mask
-          pdf.rect(0, pageHeight - margin, pageWidth, margin, 'F'); // Bottom margin mask
+          pdf.rect(0, 0, pageWidth, margin, 'F');
+          pdf.rect(0, pageHeight - margin, pageWidth, margin, 'F');
           
           if (i < totalPages - 1) {
             pdf.addPage();
           }
         }
 
-        const fileName = `${this.form.personal.name.replace(/\s+/g, "_")}_Resume.pdf`;
-        pdf.save(fileName);
-        console.log("Faithful PDF generated successfully.");
+        if (action === 'download') {
+          const fileName = `${this.form.personal.name.replace(/\s+/g, "_")}_Resume.pdf`;
+          pdf.save(fileName);
+        } else if (action === 'preview') {
+          const pdfBlob = pdf.output('blob');
+          if (this.previewUrl) URL.revokeObjectURL(this.previewUrl);
+          this.previewUrl = URL.createObjectURL(pdfBlob);
+        }
+
+        console.log("PDF generation successful.");
       } catch (error) {
         console.error("PDF Export error:", error);
         alert("Export failed. Please check console.");

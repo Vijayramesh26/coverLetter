@@ -22,7 +22,7 @@
             </div>
 
             <v-expansion-panels flat class="modern-panels">
-              <v-expansion-panel class="mb-4 border rounded-xl">
+              <v-expansion-panel class="mb-4 border rounded-xl tour-step-1">
                 <v-expansion-panel-header class="font-weight-bold py-4">
                   <div class="d-flex align-center">
                     <v-icon left color="primary">mdi-account-circle-outline</v-icon>
@@ -149,7 +149,7 @@
                 </v-expansion-panel-content>
               </v-expansion-panel> -->
 
-              <v-expansion-panel class="mb-4 border rounded-xl">
+              <v-expansion-panel class="mb-4 border rounded-xl tour-step-2">
                 <v-expansion-panel-header class="font-weight-bold py-4">
                   <div class="d-flex align-center">
                     <v-icon left color="secondary">mdi-briefcase-outline</v-icon>
@@ -281,6 +281,7 @@
                 depressed
                 color="primary"
                 @click="generateSmartContent"
+                class="tour-step-3"
               >
                 <v-icon left>mdi-auto-fix</v-icon> AI Regenerate Text
               </v-btn>
@@ -309,6 +310,7 @@
                         dark
                         v-bind="attrs"
                         v-on="on"
+                        class="tour-step-4"
                       >
                         Export <v-icon right>mdi-chevron-down</v-icon>
                       </v-btn>
@@ -435,6 +437,8 @@
         </v-col>
       </v-row>
     </v-container>
+    
+    <v-tour name="coverLetterTour" :steps="tourSteps"></v-tour>
   </v-app>
 </template>
 
@@ -499,6 +503,33 @@ export default {
         signature: "VIJAY RAMESH",
         signatureImage: null,
       },
+
+      tourSteps: [
+        {
+          target: '.tour-step-1',
+          header: { title: 'Personal Details' },
+          content: 'Start by filling in your personal identity information here.',
+          params: { placement: 'bottom' }
+        },
+        {
+          target: '.tour-step-2',
+          header: { title: 'Target Opportunity' },
+          content: 'Enter details about the company and role you are applying for.',
+          params: { placement: 'bottom' }
+        },
+        {
+          target: '.tour-step-3',
+          header: { title: 'AI Magic' },
+          content: 'Click here to automatically generate professional content for your cover letter based on your details.',
+          params: { placement: 'top' }
+        },
+        {
+          target: '.tour-step-4',
+          header: { title: 'Export' },
+          content: 'Once you are satisfied, export your cover letter to PDF or Word format.',
+          params: { placement: 'top' }
+        }
+      ]
     };
   },
 
@@ -541,6 +572,20 @@ export default {
     if (savedForm) this.form = JSON.parse(savedForm);
     if (savedContent) this.paragraphs = JSON.parse(savedContent);
     this.generateSmartContent();
+
+    // Start tour on first visit
+    if (!localStorage.getItem('tour_completed_home')) {
+      setTimeout(() => {
+        this.$tours['coverLetterTour'].start();
+        localStorage.setItem('tour_completed_home', 'true');
+      }, 1000);
+    }
+
+    this.$root.$on('start-tour', () => {
+      if (this.$route.path === '/coverletter') {
+        this.$tours['coverLetterTour'].start();
+      }
+    });
   },
 
   methods: {

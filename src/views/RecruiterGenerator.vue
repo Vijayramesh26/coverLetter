@@ -24,10 +24,10 @@
                 outlined
                 rounded
                 color="primary"
-                class="mb-2"
+                class="mb-2 tour-recruiter-step-1"
               />
 
-              <p class="text-overline font-weight-bold mb-2 grey--text">Personal Details</p>
+              <p class="text-overline font-weight-bold mb-2 grey--text tour-recruiter-step-2">Personal Details</p>
               <v-text-field v-model="f.userName" label="Name" placeholder="Vijay Ramesh" dense outlined rounded />
               <v-row dense>
                 <v-col cols="6">
@@ -46,7 +46,7 @@
                 </v-col>
               </v-row>
 
-              <p class="text-overline font-weight-bold mb-2 grey--text">Recruiter Details</p>
+              <p class="text-overline font-weight-bold mb-2 grey--text tour-recruiter-step-3">Recruiter Details</p>
               <v-text-field v-model="f.recruiterName" label="Name" placeholder="Vikram" dense outlined rounded />
               <v-text-field v-model="f.recruiterEmail" label="Email" placeholder="example@company.com" dense outlined rounded />
               
@@ -115,7 +115,7 @@
                     </v-btn>
                   </v-col>
                   <v-col cols="6" sm="3">
-                    <v-btn block large rounded depressed color="primary" class="text-none" @click="copyAll">
+                    <v-btn block large rounded depressed color="primary" class="text-none tour-recruiter-step-4" @click="copyAll">
                       <v-icon left>mdi-content-copy</v-icon> Copy
                     </v-btn>
                   </v-col>
@@ -131,6 +131,8 @@
       <v-icon left color="success">mdi-check-circle</v-icon>
       Copied to clipboard
     </v-snackbar>
+
+    <v-tour name="recruiterTour" :steps="tourSteps"></v-tour>
   </v-container>
 </template>
 
@@ -167,7 +169,33 @@ export default {
         experience: "3",
         location: "Chennai"
       },
-      adminTemplates: []
+      adminTemplates: [],
+      tourSteps: [
+        {
+          target: '.tour-recruiter-step-1',
+          header: { title: 'Message Style' },
+          content: 'Choose from various outreach styles like Value-First or Short & Direct.',
+          params: { placement: 'bottom' }
+        },
+        {
+          target: '.tour-recruiter-step-2',
+          header: { title: 'Your Info' },
+          content: 'Keep your personal and contact details updated here.',
+          params: { placement: 'bottom' }
+        },
+        {
+          target: '.tour-recruiter-step-3',
+          header: { title: 'Recruiter Info' },
+          content: 'Enter the details of the recruiter you are reaching out to.',
+          params: { placement: 'bottom' }
+        },
+        {
+          target: '.tour-recruiter-step-4',
+          header: { title: 'Send & Copy' },
+          content: 'Directly open in Gmail, WhatsApp, LinkedIn, or just copy the text.',
+          params: { placement: 'top' }
+        }
+      ]
     };
   },
 
@@ -176,6 +204,22 @@ export default {
     if (this.$vuetify.breakpoint.smAndDown) {
       this.selectedTemplate = "Short & Direct";
     }
+
+    // Start tour on first visit
+    if (!localStorage.getItem('tour_completed_recruiter')) {
+      setTimeout(() => {
+        if (this.$tours['recruiterTour']) {
+          this.$tours['recruiterTour'].start();
+          localStorage.setItem('tour_completed_recruiter', 'true');
+        }
+      }, 1000);
+    }
+
+    this.$root.$on('start-tour', () => {
+      if (this.$route.path === '/recruiter' || this.$route.path === '/') {
+        this.$tours['recruiterTour'].start();
+      }
+    });
   },
 
   computed: {

@@ -15,6 +15,9 @@
  
       <v-tabs color="primary" class="hidden-sm-and-down ml-5" optional hide-slider>
         <v-tab to="/" class="text-none font-weight-bold px-6 mr-2 rounded-pill">
+          <v-icon left small>mdi-view-dashboard-outline</v-icon> Dashboard
+        </v-tab>
+        <v-tab to="/recruiter" class="text-none font-weight-bold px-6 mr-2 rounded-pill">
           <v-icon left small>mdi-message-text-outline</v-icon> Generator
         </v-tab>
         <v-tab to="/coverletter" class="text-none font-weight-bold px-6 mr-2 rounded-pill">
@@ -23,17 +26,18 @@
         <v-tab to="/resume" class="text-none font-weight-bold px-6 mr-2 rounded-pill">
           <v-icon left small>mdi-account-details-outline</v-icon> Resume
         </v-tab>
-        <v-tab to="/admin/templates" class="text-none font-weight-bold px-6 rounded-pill">
-          <v-icon left small>mdi-cog-outline</v-icon> Admin
-        </v-tab>
       </v-tabs>
 
       <v-spacer />
 
-      <div class="d-flex align-center flex-shrink-0">
+        <v-btn icon color="primary" class="mr-2" @click="startTour">
+          <v-icon>mdi-help-circle-outline</v-icon>
+        </v-btn>
+
+        <div class="d-flex align-center flex-shrink-0">
         <v-chip v-if="$vuetify.breakpoint.lgAndUp" pill color="grey lighten-4" class="pr-4">
-          <v-avatar left color="primary" size="24" class="white--text text-caption">VR</v-avatar>
-          <span class="text-caption font-weight-bold grey--text text--darken-3">Vijay Ramesh</span>
+          <v-avatar left color="primary" size="24" class="white--text text-caption">&copy;</v-avatar>
+          <span class="text-caption font-weight-bold grey--text text--darken-3">2026 Yezhu. All rights reserved.</span>
         </v-chip>
         
         <v-avatar v-else-if="$vuetify.breakpoint.mdOnly" color="primary" size="32" class="white--text text-caption">
@@ -54,21 +58,70 @@
       </v-container>
     </v-main>
 
-    <v-navigation-drawer v-model="mobileMenu" fixed temporary right width="280">
+    <v-navigation-drawer v-model="mobileMenu" fixed temporary right width="300" class="mobile-drawer">
+      <div class="pa-6 d-flex align-center justify-space-between border-bottom">
+        <div class="d-flex align-center">
+          <v-avatar color="primary lighten-5" size="32" class="mr-2">
+            <ZhaLogo x-small class="yezhu-logo primary--text" />
+          </v-avatar>
+          <span class="font-weight-black primary--text">Yezhu</span>
+        </div>
+        <v-btn icon small @click="mobileMenu = false">
+          <v-icon>mdi-close</v-icon>
+        </v-btn>
+      </div>
+
       <v-list nav class="pa-4">
-        <v-list-item to="/coverletter">
-          <v-list-item-title>Cover Letter</v-list-item-title>
+        <v-subheader class="text-overline font-weight-bold grey--text">Navigation</v-subheader>
+        <v-list-item to="/" rounded="pill" color="primary">
+          <v-list-item-icon class="mr-4">
+            <v-icon>mdi-view-dashboard-outline</v-icon>
+          </v-list-item-icon>
+          <v-list-item-title class="font-weight-bold">Dashboard</v-list-item-title>
         </v-list-item>
-        <v-list-item to="/resume">
-          <v-list-item-title>Resume</v-list-item-title>
+
+        <v-subheader class="text-overline font-weight-bold grey--text mt-4">Growth Tools</v-subheader>
+        <v-list-item to="/recruiter" rounded="pill" color="primary">
+          <v-list-item-icon class="mr-4">
+            <v-icon>mdi-message-text-outline</v-icon>
+          </v-list-item-icon>
+          <v-list-item-title class="font-weight-bold">Outreach</v-list-item-title>
         </v-list-item>
-        <v-list-item to="/recruiter">
-          <v-list-item-title>Generator</v-list-item-title>
+
+        <v-list-item to="/coverletter" rounded="pill" color="primary">
+          <v-list-item-icon class="mr-4">
+            <v-icon>mdi-file-document-outline</v-icon>
+          </v-list-item-icon>
+          <v-list-item-title class="font-weight-bold">Cover Letter</v-list-item-title>
         </v-list-item>
-        <v-list-item to="/admin/templates">
-          <v-list-item-title>Admin</v-list-item-title>
+
+        <v-list-item to="/resume" rounded="pill" color="primary">
+          <v-list-item-icon class="mr-4">
+            <v-icon>mdi-account-details-outline</v-icon>
+          </v-list-item-icon>
+          <v-list-item-title class="font-weight-bold">Resume</v-list-item-title>
+        </v-list-item>
+
+        <v-subheader class="text-overline font-weight-bold grey--text mt-4">Settings</v-subheader>
+        <v-list-item to="/admin/templates" rounded="pill" color="primary">
+          <v-list-item-icon class="mr-4">
+            <v-icon>mdi-cog-outline</v-icon>
+          </v-list-item-icon>
+          <v-list-item-title class="font-weight-bold">Templates</v-list-item-title>
         </v-list-item>
       </v-list>
+
+      <template v-slot:append>
+        <div class="pa-4 border-top bg-grey-lighten-5">
+          <div class="d-flex align-center">
+            <v-avatar color="primary" size="40" class="white--text font-weight-bold mr-3">VR</v-avatar>
+            <div class="d-flex flex-column">
+              <span class="text-body-2 font-weight-bold primary--text">Vijay Ramesh</span>
+              <span class="text-caption grey--text">Pro Account</span>
+            </div>
+          </div>
+        </div>
+      </template>
     </v-navigation-drawer>
   </v-app>
 </template>
@@ -82,7 +135,14 @@ export default {
   },
   data: () => ({
     mobileMenu: false
-  })
+  }),
+  methods: {
+    startTour() {
+      // Each component (Dashboard, Home, ResumeBuilder, RecruiterGenerator) 
+      // listens for this event on $root and checks its own route.
+      this.$root.$emit('start-tour');
+    }
+  }
 };
 </script>
 
@@ -124,4 +184,58 @@ export default {
   background-color: transparent !important;
 }
 
+/* Vue Tour Global Overrides */
+.v-tour {
+  z-index: 9999 !important;
+}
+
+.v-tour__step {
+  z-index: 10000 !important;
+  background-color: #ffffff !important;
+  color: #2c3e50 !important;
+  border-radius: 12px !important;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.15) !important;
+}
+
+.v-tour__step--highlighted {
+  box-shadow: 0 0 0 9999px rgba(0,0,0,.4) !important;
+}
+
+.v-tour__step__header {
+  background-color: #1976d2 !important;
+  color: white !important;
+  border-top-left-radius: 12px !important;
+  border-top-right-radius: 12px !important;
+  padding: 12px 16px !important;
+}
+
+.v-tour__step__content {
+  padding: 16px !important;
+  font-size: 14px !important;
+}
+
+.v-tour__step__buttons {
+  padding: 12px 16px !important;
+  display: flex !important;
+  justify-content: flex-end !important;
+}
+
+.v-step__button {
+  background: #1976d2 !important;
+  color: white !important;
+  border-radius: 6px !important;
+  padding: 6px 16px !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+}
+
+.v-step__button-skip {
+  background: transparent !important;
+  color: #666 !important;
+}
+
+.v-step__button-previous {
+  background: #f0f0f0 !important;
+  color: #333 !important;
+}
 </style>
