@@ -104,8 +104,8 @@
                 <v-expansion-panel-content>
                   <v-text-field v-model="form.labels.experience" label="Section Header" outlined rounded dense class="mb-4" />
                   <div v-for="(exp, index) in form.experience" :key="index" class="mb-6 pb-4 border-bottom position-relative">
-                    <v-btn icon small color="error" class="position-absolute right-0" @click="removeExperience(index)">
-                      <v-icon small>mdi-close</v-icon>
+                    <v-btn icon small color="error" class="position-absolute right-0 mt-n7" @click="removeExperience(index)">
+                      <v-icon small>mdi-delete</v-icon>
                     </v-btn>
                     <v-row dense>
                       <v-col cols="8"><v-text-field v-model="exp.company" label="Company" outlined rounded dense /></v-col>
