@@ -137,7 +137,7 @@
                 <v-expansion-panel-content>
                   <v-text-field v-model="form.labels.projects" label="Section Header" outlined rounded dense class="mb-4" />
                   <div v-for="(proj, index) in form.projects" :key="index" class="mb-6 pb-4 border-bottom position-relative">
-                    <v-btn icon small color="error" class="position-absolute right-0 mt-7" @click="removeProject(index)">
+                    <v-btn icon small color="error" class="position-absolute right-0 mt-n7" @click="removeProject(index)">
                       <v-icon small>mdi-delete</v-icon>
                     </v-btn>
                     <v-row dense>
@@ -167,7 +167,7 @@
                 <v-expansion-panel-content>
                   <v-text-field v-model="form.labels.education" label="Section Header" outlined rounded dense class="mb-4" />
                   <div v-for="(edu, index) in form.education" :key="index" class="mb-6 pb-4 border-bottom position-relative">
-                    <v-btn icon small color="error" class="position-absolute right-0 mt-7" @click="removeEducation(index)">
+                    <v-btn icon small color="error" class="position-absolute right-0 mt-n7" @click="removeEducation(index)">
                       <v-icon small>mdi-delete</v-icon>
                     </v-btn>
                     <v-row dense>
