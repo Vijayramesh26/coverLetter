@@ -243,40 +243,41 @@
           <div class="paper-wrapper shadow-2xl">
             <div ref="pdfContent" :class="['resume-paper', selectedTemplate]" style="position: relative; flex-shrink: 0;">
               <!-- Header Section -->
-              <div v-if="selectedTemplate === 'professional'" class="resume-header text-center professional-header">
-                <h1 class="resume-name">{{ form.personal.name || 'Your Name' }}</h1>
-                <div class="resume-contact">
+              <div v-if="selectedTemplate === 'professional'" class="resume-header text-center text-uppercase professional-header">
+                <h1 class="resume-name blue--text text--darken-3">{{ form.personal.name || 'Your Name' }}</h1>
+                <div class="resume-contact"> <v-icon small color="green darken-2" class="mx-1">mdi-phone</v-icon>
                   {{ form.personal.phone }} | 
-                  <a :href="'mailto:' + form.personal.email">{{ form.personal.email }}</a> |
-                  <a v-if="form.personal.linkedin" :href="form.personal.linkedin" target="_blank">linkedin.com/in/{{ getUsername(form.personal.linkedin) }}</a> |
-                  <a v-if="form.personal.github" :href="form.personal.github" target="_blank">github.com/{{ getUsername(form.personal.github) }}</a>
+                  <a :href="'mailto:' + form.personal.email"><v-icon small color="red darken-2"  class="mx-1">mdi-gmail</v-icon>{{ form.personal.email }}</a> |
+                  <a v-if="form.personal.linkedin" :href="form.personal.linkedin" target="_blank"><v-icon small color="blue darken-2"  class="mx-1">mdi-linkedin</v-icon>linkedin.com/{{ getUsername(form.personal.name) }}</a> |
+                  <a v-if="form.personal.github" :href="form.personal.github" target="_blank"><v-icon small color="black darken-2"  class="mx-1">mdi-github</v-icon>github.com/{{ getUsername(form.personal.name) }}</a>
                 </div>
               </div>
 
               <div v-else-if="selectedTemplate === 'modern'" class="resume-header modern-header">
                 <div>
-                  <h1 class="resume-name">{{ form.personal.name || 'Your Name' }}</h1>
+                  <h1 class="resume-name blue--text text--darken-3 text-uppercase ">{{ form.personal.name || 'Your Name' }}</h1>
                   <p class="text-h6 grey--text text--darken-2 mb-0">{{ form.experience[0] ? form.experience[0].role : 'Professional' }}</p>
                 </div>
                 <div class="resume-contact text-right">
-                  <div><v-icon x-small color="grey">mdi-phone</v-icon> {{ form.personal.phone }}</div>
-                  <div><v-icon x-small color="grey">mdi-email</v-icon> {{ form.personal.email }}</div>
-                  <div v-if="form.personal.linkedin"><v-icon x-small color="grey">mdi-linkedin</v-icon> {{ getUsername(form.personal.linkedin) }}</div>
-                  <div v-if="form.personal.github"><v-icon x-small color="grey">mdi-github</v-icon> {{ getUsername(form.personal.github) }}</div>
+                  <div><v-icon small color="green darken-2" class="mx-1">mdi-phone</v-icon> {{ form.personal.phone }}</div>
+                  <div><v-icon small color="red darken-2"  class="mx-1">mdi-gmail</v-icon> {{ form.personal.email }}</div>
+                  <div v-if="form.personal.linkedin"><v-icon small color="blue darken-2"  class="mx-1">mdi-linkedin</v-icon> {{ getUsername(form.personal.linkedin) }}</div>
+                  <div v-if="form.personal.github"><v-icon small color="black darken-2"  class="mx-1">mdi-github</v-icon> {{ getUsername(form.personal.github) }}</div>
                 </div>
               </div>
 
               <div v-else class="resume-header classic-header">
-                <h1 class="resume-name">{{ form.personal.name || 'Your Name' }}</h1>
+                <h1 class="resume-name blue--text text--darken-3 text-capitalize text-decoration-none">{{ form.personal.name || 'Your Name' }}</h1>
                 <p class="resume-contact">
-                  {{ form.personal.phone }} &bull; {{ form.personal.email }} &bull; 
-                  <span v-if="form.personal.linkedin">linkedin.com/in/{{ getUsername(form.personal.linkedin) }}</span>
+                  <v-icon small color="green darken-2" class="mx-1">mdi-phone</v-icon> {{ form.personal.phone }} &bull; <v-icon small color="red darken-2"  class="mx-1">mdi-gmail</v-icon>{{ form.personal.email }} &bull; 
+                  <span v-if="form.personal.linkedin"> <v-icon small color="blue darken-2"  class="mx-1">mdi-linkedin</v-icon>linkedin.com/{{ getUsername(form.personal.linkedin) }}</span> &bull; 
+                  <span v-if="form.personal.github"> <v-icon small color="black darken-2"  class="mx-1">mdi-github</v-icon>github.com/{{ getUsername(form.personal.github) }}</span>
                 </p>
               </div>
 
               <!-- Summary Section -->
               <div v-if="form.visibleSections.summary && form.summary" class="resume-section">
-                <h2 class="resume-section-title">Professional Summary</h2>
+                <h2 class="resume-section-title blue--text text--darken-3">Professional Summary</h2>
                 <div class="resume-content">
                   <p>{{ form.summary }}</p>
                 </div>
@@ -284,7 +285,7 @@
 
               <!-- Technical Skills Section -->
               <div v-if="form.visibleSections.skills && form.skills.length" class="resume-section">
-                <h2 class="resume-section-title">{{ form.labels.skills }}</h2>
+                <h2 class="resume-section-title blue--text text--darken-3">{{ form.labels.skills }}</h2>
                 <div class="resume-content">
                   <ul class="resume-list no-bullets">
                     <li v-for="(skill, index) in form.skills" :key="index">
@@ -296,7 +297,7 @@
 
               <!-- Projects Section -->
               <div v-if="form.visibleSections.projects && form.projects.length" class="resume-section">
-                <h2 class="resume-section-title">{{ form.labels.projects }}</h2>
+                <h2 class="resume-section-title blue--text text--darken-3 ">{{ form.labels.projects }}</h2>
                 <div class="resume-content">
                   <div v-for="(proj, index) in form.projects" :key="index" class="resume-subheading-group">
                     <div class="resume-subheading-header">
@@ -315,7 +316,7 @@
 
               <!-- Experience Section -->
               <div v-if="form.visibleSections.experience && form.experience.length" class="resume-section">
-                <h2 class="resume-section-title">{{ form.labels.experience }}</h2>
+                <h2 class="resume-section-title blue--text text--darken-3 ">{{ form.labels.experience }}</h2>
                 <div class="resume-content">
                   <div v-for="(exp, index) in form.experience" :key="index" class="resume-subheading-group">
                     <div class="resume-subheading-header">
@@ -337,7 +338,7 @@
 
               <!-- Education Section -->
               <div v-if="form.visibleSections.education && form.education.length" class="resume-section">
-                <h2 class="resume-section-title">{{ form.labels.education }}</h2>
+                <h2 class="resume-section-title blue--text text--darken-3 ">{{ form.labels.education }}</h2>
                 <div class="resume-content">
                   <div v-for="(edu, index) in form.education" :key="index" class="resume-subheading-group no-margin">
                     <div class="resume-subheading-header">
@@ -354,7 +355,7 @@
 
               <!-- Custom Sections -->
               <div v-for="(section, index) in form.customSections" :key="'preview-'+index" class="resume-section">
-                <h2 class="resume-section-title">{{ section.title }}</h2>
+                <h2 class="resume-section-title blue--text text--darken-3 ">{{ section.title }}</h2>
                 <div class="resume-content">
                   <p v-if="!section.content.includes('\n')" class="mb-0">{{ section.content }}</p>
                   <ul v-else class="resume-list">
